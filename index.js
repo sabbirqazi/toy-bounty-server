@@ -38,10 +38,25 @@ async function run() {
     res.send(result);
 })
 
+   //search by category
+   app.get("/alltoys/:text", async (req, res) => {
+    console.log(req.params.text)
+    if(req.params.text == "Science" || req.params.text == "Math" || req.params.text == "Engineering" ){
+        const result = await toysCollection
+        .find({subcategory: req.params.text})
+        .toArray();
+        console.log(result)
+        return res.send(result)
+    }
+    const result = await toysCollection.find({}).toArray();
+    res.send(result)
+   })
+
+
    //post the data
    app.post('/alltoys', async (req, res) => {
     const newToys = req.body;
-    console.log(newToys);
+    /* console.log(newToys); */
     const result = await toysCollection.insertOne(newToys);
     res.send(result);
 
