@@ -33,43 +33,32 @@ async function run() {
       res.send(result);
     });
 
-
     //get the single data for details
-  app.get("/alltoys/:text/:id", async (req, res) => {
+    app.get("/alltoys/:text/:id", async (req, res) => {
       console.log(req.params.id);
       const toys = await toysCollection.findOne({
         _id: new ObjectId(req.params.id),
       });
       res.send(toys);
-    }); 
+    });
 
-//getting user specific toys 
+    //getting user specific toys
 
+    app.get("/mytoys", async (req, res) => {
+      console.log(req.query.selleremail);
+      let query = {};
+      if (req.query?.selleremail) {
+        query = { selleremail: req.query.selleremail };
+      }
+      const result = await toysCollection.find(query).toArray();
 
-app.get('/mytoys', async (req, res) => {
-  console.log(req.query.selleremail);
-  let query = {};
-  if (req.query?.selleremail) {
-      query = { selleremail: req.query.selleremail }
-  }
-  const result = await toysCollection.find(query).toArray();
+      res.send(result);
+    });
 
-  res.send(result);
-})
-
-/*     app.get("/mytoys/:email", async (req, res) => {
-      
-      const toys = await toysCollection
-        .find({
-          selleremail: req.params.email })
-        .toArray();
-        console.log(toys) 
-      res.send(toys);
-    }); */
+   
 
     //search by category
     app.get("/alltoys/:text", async (req, res) => {
-      console.log(req.params.text);
       if (
         req.params.text == "Science" ||
         req.params.text == "Math" ||
@@ -84,7 +73,6 @@ app.get('/mytoys', async (req, res) => {
       const result = await toysCollection.find({}).toArray();
       res.send(result);
     });
- 
 
     //post the data
     app.post("/alltoys", async (req, res) => {
@@ -93,39 +81,39 @@ app.get('/mytoys', async (req, res) => {
       const result = await toysCollection.insertOne(newToys);
       res.send(result);
     });
-
-
-    app.get('/mytoys/:id', async(req, res) => {
+//get the single data of user
+    app.get("/mytoys/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) };
       const result = await toysCollection.findOne(query);
       res.send(result);
-  })
+    });
 
-    //update toy
- /*   app.put("/updateToy/:id", async (req, res) => {
+ //update toy
+    app.put("/mytoys/:id", async (req, res) => {
       const id = req.params.id;
-      const body = req.body;
-      console.log(body);
       const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedToy = req.body;
       const updateDoc = {
         $set: {
-          title: body.title,
-          salary: body.salary,
-          category: body.category,
+          price: updatedToy.price,
+          quantity: updatedToy.quantity,
+          details: updatedToy.details,
         },
       };
-      const result = await toysCollection.updateOne(filter, updateDoc);
+      const result = await toysCollection.updateOne(filter, updateDoc, options);
       res.send(result);
-    }); */
+      console.log(result);
+    });
 
-    //delete data 
-    app.delete('/mytoys/:id', async (req, res) => {
+    //delete data
+    app.delete("/mytoys/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) }
+      const query = { _id: new ObjectId(id) };
       const result = await toysCollection.deleteOne(query);
       res.send(result);
-  })
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
