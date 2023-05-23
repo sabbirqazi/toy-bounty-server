@@ -47,7 +47,7 @@ async function run() {
     const indexOptions = { name: "toyTitle" }; // Replace index_name with the desired index name
     const result = await toysCollection.createIndex(indexKeys, indexOptions); */
 
-    //get data
+    //get data all toys
     app.get("/alltoys", async (req, res) => {
       const cursor = toysCollection.find();
       const result = await cursor.toArray();
@@ -64,7 +64,7 @@ async function run() {
         return res.status(400).send("Invalid ID format");
       }
 
-      console.log(id);
+     
       const query = { _id: new ObjectId(id) };
       const result = await toysCollection.findOne(query);
       console.log(result);
